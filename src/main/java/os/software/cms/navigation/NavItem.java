@@ -11,7 +11,7 @@ public class NavItem {
 	private final List<NavItem> children = new ArrayList<>();
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public void setName(final String name) {
@@ -19,7 +19,7 @@ public class NavItem {
 	}
 
 	public String getTitle() {
-		return title;
+		return this.title;
 	}
 
 	public void setTitle(final String title) {
@@ -27,7 +27,7 @@ public class NavItem {
 	}
 
 	public String getRef() {
-		return ref;
+		return this.ref;
 	}
 
 	public void setRef(final String ref) {
@@ -35,11 +35,11 @@ public class NavItem {
 	}
 
 	public List<NavItem> getChildren() {
-		return children;
+		return this.children;
 	}
 
 	public NavItem getParent() {
-		return parent;
+		return this.parent;
 	}
 
 	public void setParent(final NavItem parent) {
@@ -47,7 +47,7 @@ public class NavItem {
 	}
 
 	public boolean isRoot() {
-		return parent == null;
+		return this.parent == null;
 	}
 
 	public String getPath() {
@@ -63,7 +63,7 @@ public class NavItem {
 	}
 
 	private void addParents(final NavItem item, final StringBuilder builder) {
-		parent = item.getParent();
+		final NavItem parent = item.getParent();
 		if (parent == null || parent.isRoot()) {
 			return;
 		}
@@ -78,14 +78,14 @@ public class NavItem {
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("NavItem [name=");
-		builder.append(name);
+		builder.append(this.name);
 		builder.append(", title=");
-		builder.append(title);
+		builder.append(this.title);
 		builder.append(", ref=");
-		builder.append(ref);
+		builder.append(this.ref);
 		builder.append(", parent=");
-		if (parent != null) {
-			builder.append(parent.getName());
+		if (this.parent != null) {
+			builder.append(this.parent.getName());
 		}
 		builder.append(", children=[");
 		for (final NavItem child : this.children) {

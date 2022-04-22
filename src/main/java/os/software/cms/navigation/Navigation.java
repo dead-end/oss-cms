@@ -31,13 +31,6 @@ public class Navigation {
 		this.navigation = Paths.get(Constants.PATH_NAVIGATION);
 	}
 
-	public void log(final NavItem navItem) {
-		logger.log(Level.INFO, "nav item {0} root: {1} path: {2}", navItem, navItem.isRoot(), navItem.getPath());
-		for (final NavItem child : navItem.getChildren()) {
-			log(child);
-		}
-	}
-
 	public NavItem getNavItem(final String pathStr) {
 
 		if (pathStr.length() == 0) {
@@ -66,13 +59,11 @@ public class Navigation {
 	}
 
 	public void readNavTree() throws PersistanceException, IOException {
-		final ObjectMapper objectMapper = new ObjectMapper();
 
 		this.map = new HashMap<>();
-		this.root = readNavTree(this.navigation, null, objectMapper);
+		this.root = readNavTree(this.navigation, null, new ObjectMapper());
 
-		log(this.root);
-		logger.log(Level.INFO, "-------------{0}", this.map.get("blog/blog-1"));
+		traverse(ni -> logger.log(Level.INFO, "nav item {0} root: {1} path: {2}", ni, ni.isRoot(), ni.getPath()));
 	}
 
 	private NavItem readNavTree(final Path path, final NavItem parent, final ObjectMapper objectMapper)
@@ -92,6 +83,7 @@ public class Navigation {
 		}
 
 		navItem.setParent(parent);
+		logger.log(Level.INFO, "################ current: {0} parent: {0}", navItem);
 
 		for (final String child : children) {
 			if (!Constants.FILE_NAV.equals(child)) {
@@ -125,4 +117,15 @@ public class Navigation {
 		return this.map.get(ref);
 	}
 
+	public void traverse(final NavItemVisite visite) {
+		traverse(this.root, visite);
+	}
+
+	private void traverse(final NavItem navItem, final NavItemVisite visite) {
+		visite.visite(navItem);
+
+		for (final NavItem child : navItem.getChildren()) {
+			traverse(child, visite);
+		}
+	}
 }

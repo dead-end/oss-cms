@@ -14,58 +14,54 @@ import os.software.cms.script.RenderEngine;
 public class OssCms {
 	private static final Logger logger = System.getLogger(OssCms.class.getName());
 
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws Exception {
 
-		try {
+		final Path home = Paths.get(args[0]).toAbsolutePath().normalize();
 
-			final Path home = Paths.get(args[0]).toAbsolutePath().normalize();
+		final Persistance persistance = new Persistance(home);
 
-			final Persistance persistance = new Persistance(home);
+		final Navigation navigation = new Navigation(persistance);
+		navigation.readNavTree();
 
-			final Navigation navigation = new Navigation(persistance);
-			navigation.readNavTree();
+		final RenderEngine renderScriptEngine = new RenderEngine(persistance);
+		renderScriptEngine.loadDefaultTemplates();
 
-			final RenderEngine renderScriptEngine = new RenderEngine(persistance);
-			renderScriptEngine.loadDefaultTemplates();
+		final Context ctx = new Context(persistance, renderScriptEngine, navigation);
 
-			final Context ctx = new Context(persistance, renderScriptEngine, navigation);
+		final Path out = Paths.get(args[1]);
 
-			final Path out = Paths.get(args[1]);
+		navigation.traverse(ni -> {
 
-			String tmp;
+			try {
+				final String tmp = ctx.render(ni.getRef(), "page", ctx.getDefaultSelector());
+				final Path outPath = out.resolve(ni.getPath());
+				if (!outPath.toFile().getParentFile().exists()) {
+					outPath.toFile().getParentFile().mkdirs();
+				}
 
-			tmp = ctx.render("blog/blog-1", "page", ctx.getDefaultSelector());
-			Files.writeString(out.resolve("blog-1.html"), tmp);
+				Files.writeString(out.resolve(ni.getPath()), tmp);
+			} catch (final Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
 
-			tmp = ctx.render("blogs/blogs", "page", ctx.getDefaultSelector());
-			Files.writeString(out.resolve("blogs.html"), tmp);
+		String path;
+		path = "";
+		logger.log(Level.INFO, "path: {0} found: {1}", path, navigation.getNavItem(path));
+		path = "/";
+		logger.log(Level.INFO, "path: {0} found: {1}", path, navigation.getNavItem(path));
+		path = "index.html";
+		logger.log(Level.INFO, "path: {0} found: {1}", path, navigation.getNavItem(path));
+		path = "/index.html";
+		logger.log(Level.INFO, "path: {0} found: {1}", path, navigation.getNavItem(path));
 
-			tmp = ctx.render("home/home", "page", ctx.getDefaultSelector());
-			Files.writeString(out.resolve("index.html"), tmp);
-
-			tmp = ctx.render("about/about", "page", ctx.getDefaultSelector());
-			Files.writeString(out.resolve("about.html"), tmp);
-
-			String path;
-			path = "";
-			logger.log(Level.INFO, "path: {0} found: {1}", path, navigation.getNavItem(path));
-			path = "/";
-			logger.log(Level.INFO, "path: {0} found: {1}", path, navigation.getNavItem(path));
-			path = "index.html";
-			logger.log(Level.INFO, "path: {0} found: {1}", path, navigation.getNavItem(path));
-			path = "/index.html";
-			logger.log(Level.INFO, "path: {0} found: {1}", path, navigation.getNavItem(path));
-
-			path = "about.html";
-			logger.log(Level.INFO, "path: {0} found: {1}", path, navigation.getNavItem(path));
-			path = "blogs.html";
-			logger.log(Level.INFO, "path: {0} found: {1}", path, navigation.getNavItem(path));
-			path = "blogs/blog-1.html";
-			logger.log(Level.INFO, "path: {0} found: {1}", path, navigation.getNavItem(path));
-
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
+		path = "about.html";
+		logger.log(Level.INFO, "path: {0} found: {1}", path, navigation.getNavItem(path));
+		path = "blogs.html";
+		logger.log(Level.INFO, "path: {0} found: {1}", path, navigation.getNavItem(path));
+		path = "blogs/blog-1.html";
+		logger.log(Level.INFO, "path: {0} found: {1}", path, navigation.getNavItem(path));
 
 	}
 }
