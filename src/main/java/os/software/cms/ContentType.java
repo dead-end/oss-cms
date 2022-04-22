@@ -21,8 +21,8 @@ public class ContentType {
 		return Paths.get(this.id).getName(0).toString();
 	}
 
-	public Path getJsonPath(final Path home) {
-		return Paths.get(home.toString(), Constants.PATH_COLLECTIONS, this.id + ".json");
+	public Path getJsonPath() {
+		return Paths.get(Constants.PATH_COLLECTIONS, this.id + ".json");
 	}
 
 	public String getRendererFct(final String type, final String selector) {
