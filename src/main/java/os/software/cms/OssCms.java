@@ -26,10 +26,9 @@ public class OssCms {
 			navigation.readNavTree();
 
 			final RenderEngine renderScriptEngine = new RenderEngine(persistance);
+			renderScriptEngine.loadDefaultTemplates();
 
 			final Context ctx = new Context(persistance, renderScriptEngine, navigation);
-
-			renderScriptEngine.loadDir(Paths.get(Constants.PATH_TEMPLATES));
 
 			final Path out = Paths.get(args[1]);
 

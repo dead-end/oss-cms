@@ -4,6 +4,7 @@ import java.io.Reader;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,13 +20,13 @@ public class RenderEngine {
 
 	private static final Logger logger = System.getLogger(RenderEngine.class.getName());
 
-	private static NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
+	private static final NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
 
 	private final ScriptEngine engine;
 
-	private final Set<String> loadedScripts = new HashSet<>();
-
 	private final Persistance persistance;
+
+	private final Set<String> loadedScripts = new HashSet<>();
 
 	public RenderEngine(final Persistance persistance) {
 		this.engine = factory.getScriptEngine("--language=es6");
@@ -35,7 +36,7 @@ public class RenderEngine {
 	public void loadScript(final Path path) throws Exception {
 		final Path norm = path.normalize();
 		if (!this.loadedScripts.contains(norm.toString())) {
-			try (final Reader script = persistance.getReader(path)) {
+			try (final Reader script = this.persistance.getReader(path)) {
 				this.engine.eval(script);
 			}
 			this.loadedScripts.add(norm.toString());
@@ -43,15 +44,15 @@ public class RenderEngine {
 		}
 	}
 
-	public void loadDir(final Path dir) throws Exception {
-		final String[] children = persistance.getChildren(dir, n -> n.endsWith(".js"));
+	public void loadDefaultTemplates() throws Exception {
+		final Path dir = Paths.get(Constants.PATH_TEMPLATES);
+		final String[] children = this.persistance.getChildren(dir, n -> n.endsWith(".js"));
 		for (final String child : children) {
 			loadScript(dir.resolve(child));
 		}
 	}
 
 	public String invokeRenderFct(final String fctStr, final String id, final String jsonStr) throws Exception {
-
 		final Invocable invocable = (Invocable) this.engine;
 
 		final Object json = this.engine.eval(Constants.JS_JSON_OBJECT);
