@@ -1,10 +1,8 @@
 package os.software.cms.navigation;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -15,18 +13,22 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import os.software.cms.Constants;
+import os.software.cms.persistance.Persistance;
+import os.software.cms.persistance.PersistanceException;
 
 public class Navigation {
 	private static final Logger logger = System.getLogger(Navigation.class.getName());
 
 	private final Path navigation;
+	private final Persistance persistance;
 
 	private NavItem root;
 	private Map<String, NavItem> map;
 
-	public Navigation(final Path home) {
+	public Navigation(final Persistance persistance) {
 		super();
-		this.navigation = Paths.get(home.toString(), Constants.PATH_NAVIGATION);
+		this.persistance = persistance;
+		this.navigation = Paths.get(Constants.PATH_NAVIGATION);
 	}
 
 	public void log(final NavItem navItem) {
@@ -63,38 +65,38 @@ public class Navigation {
 		return navItem;
 	}
 
-	public void readNavTree() throws IOException {
+	public void readNavTree() throws PersistanceException, IOException {
 		final ObjectMapper objectMapper = new ObjectMapper();
 
 		this.map = new HashMap<>();
-		this.root = readNavTree(this.navigation.toFile(), null, objectMapper);
+		this.root = readNavTree(this.navigation, null, objectMapper);
 
 		log(this.root);
 		logger.log(Level.INFO, "-------------{0}", this.map.get("blog/blog-1"));
 	}
 
-	private NavItem readNavTree(final File file, final NavItem parent, final ObjectMapper objectMapper)
-			throws IOException {
+	private NavItem readNavTree(final Path path, final NavItem parent, final ObjectMapper objectMapper)
+			throws IOException, PersistanceException {
 
-		final File[] children = file.listFiles();
-		if (children == null) {
+		final String[] children = this.persistance.getChildren(path, null);
+		if (children == null || children.length == 0) {
 			return null;
 		}
 
-		final NavItem navItem = navItemFromJson(children, objectMapper);
+		final NavItem navItem = navItemFromJson(path, children, objectMapper);
 		if (parent == null) {
 			navItem.setName("");
 		} else {
-			navItem.setName(file.getName());
+			navItem.setName(path.getFileName().toString());
 			parent.getChildren().add(navItem);
 		}
 
 		navItem.setParent(parent);
 
-		for (final File child : children) {
-			if (child.isDirectory()) {
-				logger.log(Level.INFO, "entry: {0}", child.getPath());
-				readNavTree(child, navItem, objectMapper);
+		for (final String child : children) {
+			if (!Constants.FILE_NAV.equals(child)) {
+				logger.log(Level.INFO, "entry: {0}", child);
+				readNavTree(path.resolve(child), navItem, objectMapper);
 			}
 		}
 
@@ -103,17 +105,19 @@ public class Navigation {
 		return navItem;
 	}
 
-	private NavItem navItemFromJson(final File[] children, final ObjectMapper objectMapper) throws IOException {
-		for (final File child : children) {
-			if (child.isFile() && Constants.FILE_NAV.equals(child.getName())) {
-				final String json = Files.readString(Paths.get(child.getAbsolutePath()));
+	private NavItem navItemFromJson(final Path parent, final String[] children, final ObjectMapper objectMapper)
+			throws PersistanceException, IOException {
+		for (final String child : children) {
+			if (Constants.FILE_NAV.equals(child)) {
+				final Path path = parent.resolve(child);
+				final String json = this.persistance.readString(path);
 				return objectMapper.readValue(json, NavItem.class);
 			}
 		}
 		throw new IllegalArgumentException("No nav file found!");
 	}
 
-	public NavItem getRoot() {
+	public NavItem getNavRoot() {
 		return this.root;
 	}
 

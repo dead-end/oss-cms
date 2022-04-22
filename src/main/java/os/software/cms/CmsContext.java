@@ -1,44 +1,38 @@
 package os.software.cms;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-import javax.script.ScriptException;
-
 import os.software.cms.navigation.NavItem;
 import os.software.cms.navigation.Navigation;
-import os.software.cms.script.IRenderScriptEngine;
+import os.software.cms.persistance.Persistance;
+import os.software.cms.script.RenderScriptEngine;
 
 public class CmsContext {
 
-	private final Path home;
+	private final Persistance persistance;
 
-	private final IRenderScriptEngine renderScriptEngine;
+	private final RenderScriptEngine renderScriptEngine;
 
 	private final Navigation navigation;
 
-	public CmsContext(final Path home, final IRenderScriptEngine renderScriptEngine, final Navigation navigation) {
-		this.home = home;
+	public CmsContext(final Persistance persistance, final RenderScriptEngine renderScriptEngine,
+			final Navigation navigation) {
+		this.persistance = persistance;
 		this.renderScriptEngine = renderScriptEngine;
 		this.navigation = navigation;
 
 		renderScriptEngine.setContext(this);
 	}
 
-	private void loadRenderScript(final String contentType, final String type, final String selector)
-			throws IOException, ScriptException {
-		this.renderScriptEngine.loadScript(ContentType.getRendererPath(contentType, type, selector).toString());
+	private void loadRenderScript(final String contentType, final String type, final String selector) throws Exception {
+		this.renderScriptEngine.loadScript(ContentType.getRendererPath(contentType, type, selector));
 	}
 
-	public String render(final String id, final String type, final String selector)
-			throws IOException, ScriptException, NoSuchMethodException {
+	public String render(final String id, final String type, final String selector) throws Exception {
 
 		final ContentType contentType = new ContentType(id);
 
 		loadRenderScript(contentType.getContentType(), type, selector);
 
-		final String blog = Files.readString(contentType.getJsonPath(this.home));
+		final String blog = this.persistance.readString(contentType.getJsonPath());
 
 		final String fct = contentType.getRendererFct(type, selector);
 
@@ -50,7 +44,7 @@ public class CmsContext {
 	}
 
 	public NavItem getNavRoot() {
-		return this.navigation.getRoot();
+		return this.navigation.getNavRoot();
 	}
 
 	public NavItem getNavByRef(final String ref) {

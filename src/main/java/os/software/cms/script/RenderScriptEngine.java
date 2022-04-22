@@ -1,25 +1,22 @@
 package os.software.cms.script;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.Reader;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import javax.script.ScriptException;
 
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 
 import os.software.cms.CmsContext;
 import os.software.cms.Constants;
+import os.software.cms.persistance.Persistance;
 
-public class RenderScriptEngine implements IRenderScriptEngine {
+public class RenderScriptEngine {
 
 	private static final Logger logger = System.getLogger(RenderScriptEngine.class.getName());
 
@@ -29,47 +26,32 @@ public class RenderScriptEngine implements IRenderScriptEngine {
 
 	private final Set<String> loadedScripts = new HashSet<>();
 
-	private final Path home;
+	private final Persistance persistance;
 
-	public RenderScriptEngine(final Path home) {
+	public RenderScriptEngine(final Persistance persistance) {
 		this.engine = factory.getScriptEngine("--language=es6");
-		this.home = home;
+		this.persistance = persistance;
 	}
 
-	@Override
-	public void loadScript(final String path) throws IOException, ScriptException {
-		final String abs = checkPath(path).toString();
-		if (!this.loadedScripts.contains(abs.toString())) {
-			try (FileReader script = new FileReader(abs.toString())) {
+	public void loadScript(final Path path) throws Exception {
+		final Path norm = path.normalize();
+		if (!this.loadedScripts.contains(norm.toString())) {
+			try (final Reader script = persistance.getReader(path)) {
 				this.engine.eval(script);
 			}
-			this.loadedScripts.add(abs.toString());
-			logger.log(Level.INFO, "Loaded: {0}", abs);
+			this.loadedScripts.add(norm.toString());
+			logger.log(Level.INFO, "Loaded: {0}", path);
 		}
 	}
 
-	private Path checkPath(final String path) throws IOException {
-		final Path result = Paths.get(this.home.toString(), path).toAbsolutePath().normalize();
-		if (!result.startsWith(this.home)) {
-			throw new IllegalArgumentException(String.format("Paths is not valid: %s", path));
-		}
-		return result;
-	}
-
-	@Override
-	public void loadDir(final String dirName) throws IOException, ScriptException {
-		final Path dirPath = Paths.get(this.home.toString(), dirName);
-		final File dirFile = new File(dirPath.toString());
-		final File[] jsFiles = dirFile.listFiles((final File pathname) -> pathname.getName().endsWith(".js"));
-
-		for (final File jsFile : jsFiles) {
-			loadScript(Paths.get(dirName, jsFile.getName()).toString());
+	public void loadDir(final Path dir) throws Exception {
+		final String[] children = persistance.getChildren(dir, n -> n.endsWith(".js"));
+		for (final String child : children) {
+			loadScript(dir.resolve(child));
 		}
 	}
 
-	@Override
-	public String invokeRenderFct(final String fctStr, final String id, final String jsonStr)
-			throws NoSuchMethodException, ScriptException {
+	public String invokeRenderFct(final String fctStr, final String id, final String jsonStr) throws Exception {
 
 		final Invocable invocable = (Invocable) this.engine;
 
@@ -79,8 +61,7 @@ public class RenderScriptEngine implements IRenderScriptEngine {
 		return invocable.invokeFunction(fctStr, id, data).toString();
 	}
 
-	@Override
 	public void setContext(final CmsContext ctx) {
-		this.engine.put("ctx", ctx);
+		this.engine.put(Constants.CTX_KEY, ctx);
 	}
 }
