@@ -22,24 +22,16 @@ public class Context {
 		renderScriptEngine.setContext(this);
 	}
 
-	private void loadRenderScript(final Content content, final RendererType renderType, final String selector)
-			throws Exception {
-		this.renderScriptEngine.loadScript(content.getRendererPath(renderType, selector));
-	}
-
 	public String render(final String id, final String renderTypeStr, final String selector) throws Exception {
-
 		final RendererType renderType = RendererType.valueOf(renderTypeStr);
 
 		final Content content = new Content(id);
-
-		loadRenderScript(content, renderType, selector);
-
-		final String blog = this.persistance.readString(content.getJsonPath());
-
+		final String data = this.persistance.readString(content.getJsonPath());
 		final String fct = content.getRendererFct(renderType, selector);
 
-		return this.renderScriptEngine.invokeRenderFct(fct, id, blog);
+		this.renderScriptEngine.loadScript(content.getRendererPath(renderType, selector));
+
+		return this.renderScriptEngine.invokeRenderFct(fct, id, data);
 	}
 
 	public NavItem getNavItem(final String path) {
