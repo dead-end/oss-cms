@@ -17,6 +17,10 @@ public interface Constants {
 	String JS_JSON_OBJECT = "JSON";
 
 	String JS_JSON_PARSE = "parse";
-	
+
+	String EXT_JSON = ".json";
+
+	String EX_JS = ".js";
+
 	String CTX_KEY = "ctx";
 }
