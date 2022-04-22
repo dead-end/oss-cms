@@ -4,8 +4,6 @@ public interface Constants {
 
 	String PATH_COLLECTIONS = "collections";
 
-	// String PATH_META = ".meta";
-
 	String PATH_TEMPLATES = "templates";
 
 	String PATH_NAVIGATION = "navigation";
