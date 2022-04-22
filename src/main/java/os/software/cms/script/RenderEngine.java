@@ -53,11 +53,12 @@ public class RenderEngine {
 	}
 
 	public String invokeRenderFct(final String fctStr, final String id, final String jsonStr) throws Exception {
+		logger.log(Level.INFO, "Invoking function: {0} with: {1}", fctStr, id);
 		final Invocable invocable = (Invocable) this.engine;
 
 		final Object json = this.engine.eval(Constants.JS_JSON_OBJECT);
-		final Object data = invocable.invokeMethod(json, Constants.JS_JSON_PARSE, jsonStr);
 
+		final Object data = invocable.invokeMethod(json, Constants.JS_JSON_PARSE, jsonStr);
 		return invocable.invokeFunction(fctStr, id, data).toString();
 	}
 
