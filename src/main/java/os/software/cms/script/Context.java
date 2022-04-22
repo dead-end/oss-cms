@@ -1,7 +1,7 @@
 package os.software.cms.script;
 
-import os.software.cms.Content;
 import os.software.cms.RendererType;
+import os.software.cms.collections.Content;
 import os.software.cms.navigation.NavItem;
 import os.software.cms.navigation.Navigation;
 import os.software.cms.persistance.Persistance;

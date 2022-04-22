@@ -1,9 +1,12 @@
-package os.software.cms;
+package os.software.cms.collections;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.lang3.StringUtils;
+
+import os.software.cms.Constants;
+import os.software.cms.RendererType;
 
 public class Content {
 
