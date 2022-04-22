@@ -8,7 +8,8 @@ import java.nio.file.Paths;
 
 import os.software.cms.navigation.Navigation;
 import os.software.cms.persistance.Persistance;
-import os.software.cms.script.RenderScriptEngine;
+import os.software.cms.script.Context;
+import os.software.cms.script.RenderEngine;
 
 public class OssCms {
 	private static final Logger logger = System.getLogger(OssCms.class.getName());
@@ -24,9 +25,9 @@ public class OssCms {
 			final Navigation navigation = new Navigation(persistance);
 			navigation.readNavTree();
 
-			final RenderScriptEngine renderScriptEngine = new RenderScriptEngine(persistance);
+			final RenderEngine renderScriptEngine = new RenderEngine(persistance);
 
-			final CmsContext ctx = new CmsContext(persistance, renderScriptEngine, navigation);
+			final Context ctx = new Context(persistance, renderScriptEngine, navigation);
 
 			renderScriptEngine.loadDir(Paths.get(Constants.PATH_TEMPLATES));
 

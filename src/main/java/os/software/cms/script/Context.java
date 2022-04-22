@@ -1,19 +1,19 @@
-package os.software.cms;
+package os.software.cms.script;
 
+import os.software.cms.ContentType;
 import os.software.cms.navigation.NavItem;
 import os.software.cms.navigation.Navigation;
 import os.software.cms.persistance.Persistance;
-import os.software.cms.script.RenderScriptEngine;
 
-public class CmsContext {
+public class Context {
 
 	private final Persistance persistance;
 
-	private final RenderScriptEngine renderScriptEngine;
+	private final RenderEngine renderScriptEngine;
 
 	private final Navigation navigation;
 
-	public CmsContext(final Persistance persistance, final RenderScriptEngine renderScriptEngine,
+	public Context(final Persistance persistance, final RenderEngine renderScriptEngine,
 			final Navigation navigation) {
 		this.persistance = persistance;
 		this.renderScriptEngine = renderScriptEngine;

@@ -12,13 +12,12 @@ import javax.script.ScriptEngine;
 
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 
-import os.software.cms.CmsContext;
 import os.software.cms.Constants;
 import os.software.cms.persistance.Persistance;
 
-public class RenderScriptEngine {
+public class RenderEngine {
 
-	private static final Logger logger = System.getLogger(RenderScriptEngine.class.getName());
+	private static final Logger logger = System.getLogger(RenderEngine.class.getName());
 
 	private static NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
 
@@ -28,7 +27,7 @@ public class RenderScriptEngine {
 
 	private final Persistance persistance;
 
-	public RenderScriptEngine(final Persistance persistance) {
+	public RenderEngine(final Persistance persistance) {
 		this.engine = factory.getScriptEngine("--language=es6");
 		this.persistance = persistance;
 	}
@@ -61,7 +60,7 @@ public class RenderScriptEngine {
 		return invocable.invokeFunction(fctStr, id, data).toString();
 	}
 
-	public void setContext(final CmsContext ctx) {
+	public void setContext(final Context ctx) {
 		this.engine.put(Constants.CTX_KEY, ctx);
 	}
 }
