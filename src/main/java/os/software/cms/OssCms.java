@@ -15,8 +15,8 @@ import os.software.cms.handler.NavigationHandler;
 import os.software.cms.navigation.Navigation;
 import os.software.cms.navigation.NavigationService;
 import os.software.cms.persistance.PersistanceService;
-import os.software.cms.renderer.Context;
 import os.software.cms.renderer.Renderer;
+import os.software.cms.renderer.RendererService;
 
 public class OssCms {
 	private static final Logger logger = System.getLogger(OssCms.class.getName());
@@ -30,16 +30,14 @@ public class OssCms {
 		final Navigation navigation = NavigationService.init();
 		navigation.readNavTree();
 
-		final Renderer renderEngine = new Renderer();
-
-		final Context ctx = new Context(renderEngine);
+		final Renderer renderer = RendererService.getService();
 
 		final Path out = Paths.get(args[1]);
 
 		navigation.traverse(ni -> {
 
 			try {
-				final String tmp = renderEngine.render(ni.getRef(), "page", null);
+				final String tmp = renderer.render(ni.getRef(), "page", null);
 				final Path outPath = out.resolve(ni.getPath());
 				if (!outPath.toFile().getParentFile().exists()) {
 					outPath.toFile().getParentFile().mkdirs();
@@ -76,7 +74,7 @@ public class OssCms {
 		// Create a ContextHandler with contextPath.
 		final ContextHandler context = new ContextHandler();
 		context.setContextPath("/nav");
-		context.setHandler(new NavigationHandler(navigation, renderEngine));
+		context.setHandler(new NavigationHandler(navigation));
 
 		// Link the context to the server.
 		server.setHandler(context);

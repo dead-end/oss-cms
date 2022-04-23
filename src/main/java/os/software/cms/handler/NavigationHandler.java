@@ -13,18 +13,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import os.software.cms.navigation.NavItem;
 import os.software.cms.navigation.Navigation;
-import os.software.cms.renderer.Renderer;
+import os.software.cms.renderer.RendererService;
 
 public class NavigationHandler extends AbstractHandler {
 	private static final Logger logger = System.getLogger(NavigationHandler.class.getName());
 
 	private final Navigation navigation;
-	private final Renderer renderEngine;
 
-	public NavigationHandler(final Navigation navigation, final Renderer renderEngine) {
+	public NavigationHandler(final Navigation navigation) {
 		super();
 		this.navigation = navigation;
-		this.renderEngine = renderEngine;
 	}
 
 	@Override
@@ -50,7 +48,7 @@ public class NavigationHandler extends AbstractHandler {
 					response.setContentType(MimeTypes.Type.TEXT_HTML_UTF_8.asString());
 					response.setStatus(HttpServletResponse.SC_OK);
 
-					final String html = this.renderEngine.render(navItem.getRef(), "page", null);
+					final String html = RendererService.getService().render(navItem.getRef(), "page", null);
 					logger.log(Level.INFO, html);
 
 					response.getWriter().println(html);
