@@ -13,7 +13,7 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 
 import os.software.cms.handler.NavigationHandler;
 import os.software.cms.navigation.Navigation;
-import os.software.cms.persistance.PersistanceManager;
+import os.software.cms.persistance.PersistanceService;
 import os.software.cms.script.Context;
 import os.software.cms.script.RenderEngine;
 
@@ -24,7 +24,7 @@ public class OssCms {
 
 		final Path home = Paths.get(args[0]).toAbsolutePath().normalize();
 
-		PersistanceManager.init(home);
+		PersistanceService.init(home);
 
 		final Navigation navigation = new Navigation();
 		navigation.readNavTree();

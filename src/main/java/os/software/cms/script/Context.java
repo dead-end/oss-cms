@@ -19,18 +19,6 @@ public class Context {
 
 	public String render(final String contentId, final String renderTypeStr, final String selector) throws Exception {
 		return this.renderScriptEngine.render(contentId, renderTypeStr, selector);
-		/*
-		 * final RendererType renderType = RendererType.valueOf(renderTypeStr);
-		 * 
-		 * final Content content = new Content(contentId); final String data =
-		 * PersistanceManager.getPersistance().readString(content.getJsonPath()); final
-		 * String fct = content.getRendererFct(renderType, selector);
-		 * 
-		 * this.renderScriptEngine.loadScript(content.getRendererPath(renderType,
-		 * selector));
-		 * 
-		 * return this.renderScriptEngine.invokeRenderFct(fct, contentId, data);
-		 */
 	}
 
 	public NavItem getNavItem(final String path) {

@@ -16,7 +16,7 @@ import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import os.software.cms.Constants;
 import os.software.cms.RendererType;
 import os.software.cms.collections.Content;
-import os.software.cms.persistance.PersistanceManager;
+import os.software.cms.persistance.PersistanceService;
 
 public class RenderEngine {
 
@@ -32,10 +32,10 @@ public class RenderEngine {
 		this.engine = factory.getScriptEngine("--language=es6");
 	}
 
-	public void loadScript(final Path path) throws Exception {
+	private void loadScript(final Path path) throws Exception {
 		final Path norm = path.normalize();
 		if (!this.loadedScripts.contains(norm.toString())) {
-			try (final Reader script = PersistanceManager.getPersistance().getReader(path)) {
+			try (final Reader script = PersistanceService.getService().getReader(path)) {
 				this.engine.eval(script);
 			}
 			this.loadedScripts.add(norm.toString());
@@ -45,13 +45,14 @@ public class RenderEngine {
 
 	public void loadDefaultTemplates() throws Exception {
 		final Path dir = Paths.get(Constants.PATH_TEMPLATES);
-		final String[] children = PersistanceManager.getPersistance().getChildren(dir, n -> n.endsWith(".js"));
+		final String[] children = PersistanceService.getService().getChildren(dir,
+				n -> n.endsWith(Constants.EX_JS));
 		for (final String child : children) {
 			loadScript(dir.resolve(child));
 		}
 	}
 
-	public String invokeRenderFct(final String fctStr, final String id, final String jsonStr) throws Exception {
+	private String invokeRenderFct(final String fctStr, final String id, final String jsonStr) throws Exception {
 		logger.log(Level.INFO, "Invoking function: {0} with: {1}", fctStr, id);
 		final Invocable invocable = (Invocable) this.engine;
 
@@ -65,7 +66,7 @@ public class RenderEngine {
 		final RendererType renderType = RendererType.valueOf(renderTypeStr);
 
 		final Content content = new Content(contentId);
-		final String data = PersistanceManager.getPersistance().readString(content.getJsonPath());
+		final String data = PersistanceService.getService().readString(content.getJsonPath());
 		final String fct = content.getRendererFct(renderType, selector);
 
 		loadScript(content.getRendererPath(renderType, selector));

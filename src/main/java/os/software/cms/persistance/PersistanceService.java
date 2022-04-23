@@ -2,7 +2,7 @@ package os.software.cms.persistance;
 
 import java.nio.file.Path;
 
-public class PersistanceManager {
+public class PersistanceService {
 	private static Persistance persistance;
 
 	public static void init(final Path home) {
@@ -13,7 +13,7 @@ public class PersistanceManager {
 		persistance = new Persistance(home);
 	}
 
-	public static Persistance getPersistance() {
+	public static Persistance getService() {
 		if (persistance == null) {
 			throw new IllegalStateException("Persistance is not initilized!");
 		}
