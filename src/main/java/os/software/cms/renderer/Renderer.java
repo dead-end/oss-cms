@@ -1,4 +1,4 @@
-package os.software.cms.script;
+package os.software.cms.renderer;
 
 import java.io.Reader;
 import java.lang.System.Logger;

@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import os.software.cms.navigation.NavItem;
 import os.software.cms.navigation.Navigation;
-import os.software.cms.script.Renderer;
+import os.software.cms.renderer.Renderer;
 
 public class NavigationHandler extends AbstractHandler {
 	private static final Logger logger = System.getLogger(NavigationHandler.class.getName());

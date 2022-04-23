@@ -1,4 +1,4 @@
-package os.software.cms.script;
+package os.software.cms.renderer;
 
 import os.software.cms.navigation.NavItem;
 import os.software.cms.navigation.NavigationService;

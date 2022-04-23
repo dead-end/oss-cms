@@ -15,8 +15,8 @@ import os.software.cms.handler.NavigationHandler;
 import os.software.cms.navigation.Navigation;
 import os.software.cms.navigation.NavigationService;
 import os.software.cms.persistance.PersistanceService;
-import os.software.cms.script.Context;
-import os.software.cms.script.Renderer;
+import os.software.cms.renderer.Context;
+import os.software.cms.renderer.Renderer;
 
 public class OssCms {
 	private static final Logger logger = System.getLogger(OssCms.class.getName());
