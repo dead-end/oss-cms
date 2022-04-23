@@ -1,10 +1,7 @@
 package os.software.cms.script;
 
-import os.software.cms.RendererType;
-import os.software.cms.collections.Content;
 import os.software.cms.navigation.NavItem;
 import os.software.cms.navigation.Navigation;
-import os.software.cms.persistance.PersistanceManager;
 
 public class Context {
 
@@ -20,16 +17,20 @@ public class Context {
 		renderScriptEngine.setContext(this);
 	}
 
-	public String render(final String id, final String renderTypeStr, final String selector) throws Exception {
-		final RendererType renderType = RendererType.valueOf(renderTypeStr);
-
-		final Content content = new Content(id);
-		final String data = PersistanceManager.getPersistance().readString(content.getJsonPath());
-		final String fct = content.getRendererFct(renderType, selector);
-
-		this.renderScriptEngine.loadScript(content.getRendererPath(renderType, selector));
-
-		return this.renderScriptEngine.invokeRenderFct(fct, id, data);
+	public String render(final String contentId, final String renderTypeStr, final String selector) throws Exception {
+		return this.renderScriptEngine.render(contentId, renderTypeStr, selector);
+		/*
+		 * final RendererType renderType = RendererType.valueOf(renderTypeStr);
+		 * 
+		 * final Content content = new Content(contentId); final String data =
+		 * PersistanceManager.getPersistance().readString(content.getJsonPath()); final
+		 * String fct = content.getRendererFct(renderType, selector);
+		 * 
+		 * this.renderScriptEngine.loadScript(content.getRendererPath(renderType,
+		 * selector));
+		 * 
+		 * return this.renderScriptEngine.invokeRenderFct(fct, contentId, data);
+		 */
 	}
 
 	public NavItem getNavItem(final String path) {

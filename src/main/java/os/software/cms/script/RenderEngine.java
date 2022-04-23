@@ -14,6 +14,8 @@ import javax.script.ScriptEngine;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 
 import os.software.cms.Constants;
+import os.software.cms.RendererType;
+import os.software.cms.collections.Content;
 import os.software.cms.persistance.PersistanceManager;
 
 public class RenderEngine {
@@ -57,6 +59,18 @@ public class RenderEngine {
 
 		final Object data = invocable.invokeMethod(json, Constants.JS_JSON_PARSE, jsonStr);
 		return invocable.invokeFunction(fctStr, id, data).toString();
+	}
+
+	public String render(final String contentId, final String renderTypeStr, final String selector) throws Exception {
+		final RendererType renderType = RendererType.valueOf(renderTypeStr);
+
+		final Content content = new Content(contentId);
+		final String data = PersistanceManager.getPersistance().readString(content.getJsonPath());
+		final String fct = content.getRendererFct(renderType, selector);
+
+		loadScript(content.getRendererPath(renderType, selector));
+
+		return invokeRenderFct(fct, contentId, data);
 	}
 
 	public void setContext(final Context ctx) {
