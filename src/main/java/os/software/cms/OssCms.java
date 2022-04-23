@@ -13,6 +13,7 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 
 import os.software.cms.handler.NavigationHandler;
 import os.software.cms.navigation.Navigation;
+import os.software.cms.navigation.NavigationService;
 import os.software.cms.persistance.PersistanceService;
 import os.software.cms.script.Context;
 import os.software.cms.script.RenderEngine;
@@ -26,7 +27,7 @@ public class OssCms {
 
 		PersistanceService.init(home);
 
-		final Navigation navigation = new Navigation();
+		final Navigation navigation = NavigationService.init();
 		navigation.readNavTree();
 
 		final RenderEngine renderScriptEngine = new RenderEngine();

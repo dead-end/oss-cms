@@ -5,17 +5,18 @@ import java.nio.file.Path;
 public class PersistanceService {
 	private static Persistance persistance;
 
-	public static void init(final Path home) {
+	public static Persistance init(final Path home) {
 		if (persistance != null) {
-			throw new IllegalStateException("Persistance is already initilized!");
+			throw new IllegalStateException("Service is already initilized!");
 		}
 
 		persistance = new Persistance(home);
+		return persistance;
 	}
 
 	public static Persistance getService() {
 		if (persistance == null) {
-			throw new IllegalStateException("Persistance is not initilized!");
+			throw new IllegalStateException("Service is not initilized!");
 		}
 
 		return persistance;
