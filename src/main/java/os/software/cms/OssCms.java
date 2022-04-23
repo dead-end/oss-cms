@@ -6,6 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.ContextHandler;
+
+import os.software.cms.handler.NavigationHandler;
 import os.software.cms.navigation.Navigation;
 import os.software.cms.persistance.Persistance;
 import os.software.cms.script.Context;
@@ -63,5 +69,18 @@ public class OssCms {
 		path = "blogs/blog-1.html";
 		logger.log(Level.INFO, "path: {0} found: {1}", path, navigation.getNavItem(path));
 
+		final Server server = new Server(8080);
+		final Connector connector = new ServerConnector(server);
+		server.addConnector(connector);
+
+		// Create a ContextHandler with contextPath.
+		final ContextHandler context = new ContextHandler();
+		context.setContextPath("/nav");
+		context.setHandler(new NavigationHandler(navigation, ctx));
+
+		// Link the context to the server.
+		server.setHandler(context);
+
+		server.start();
 	}
 }

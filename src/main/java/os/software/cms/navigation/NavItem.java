@@ -3,6 +3,9 @@ package os.software.cms.navigation;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 public class NavItem {
 	private String name;
 	private String title;
@@ -96,4 +99,13 @@ public class NavItem {
 		return builder.toString();
 	}
 
+	public String toJson() {
+		final ObjectMapper mapper = new ObjectMapper();
+		final ObjectNode rootNode = mapper.createObjectNode();
+		rootNode.put("name", this.name);
+		rootNode.put("title", this.title);
+		rootNode.put("ref", this.ref);
+
+		return rootNode.toPrettyString();
+	}
 }
