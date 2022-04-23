@@ -4,18 +4,16 @@ import os.software.cms.RendererType;
 import os.software.cms.collections.Content;
 import os.software.cms.navigation.NavItem;
 import os.software.cms.navigation.Navigation;
-import os.software.cms.persistance.Persistance;
+import os.software.cms.persistance.PersistanceManager;
 
 public class Context {
-
-	private final Persistance persistance;
 
 	private final RenderEngine renderScriptEngine;
 
 	private final Navigation navigation;
 
-	public Context(final Persistance persistance, final RenderEngine renderScriptEngine, final Navigation navigation) {
-		this.persistance = persistance;
+	public Context(final RenderEngine renderScriptEngine, final Navigation navigation) {
+
 		this.renderScriptEngine = renderScriptEngine;
 		this.navigation = navigation;
 
@@ -26,7 +24,7 @@ public class Context {
 		final RendererType renderType = RendererType.valueOf(renderTypeStr);
 
 		final Content content = new Content(id);
-		final String data = this.persistance.readString(content.getJsonPath());
+		final String data = PersistanceManager.getPersistance().readString(content.getJsonPath());
 		final String fct = content.getRendererFct(renderType, selector);
 
 		this.renderScriptEngine.loadScript(content.getRendererPath(renderType, selector));
