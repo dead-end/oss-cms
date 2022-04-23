@@ -28,6 +28,10 @@ public class Context {
 		return NavigationService.getService().getNavByRef(ref);
 	}
 
+	public boolean isDescendant(final NavItem parent, final String ref) {
+		return NavigationService.getService().isDescendant(parent, ref);
+	}
+
 	public String getDefaultSelector() {
 		return null;
 	}

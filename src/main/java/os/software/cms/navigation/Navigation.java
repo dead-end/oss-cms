@@ -93,9 +93,7 @@ public class Navigation {
 			}
 		}
 
-		this.map.put(navItem.getRef(), navItem);
-
-		return navItem;
+		return addNavWithRef(navItem);
 	}
 
 	private NavItem navItemFromJson(final Path parent, final String[] children, final ObjectMapper objectMapper)
@@ -117,8 +115,44 @@ public class Navigation {
 		return this.root;
 	}
 
+	public NavItem addNavWithRef(final NavItem navItem) {
+		if (this.map.containsKey(navItem.getRef())) {
+			throw new IllegalStateException("Content reference already in navigation tree: " + navItem.getRef());
+		}
+		this.map.put(navItem.getRef(), navItem);
+
+		return navItem;
+	}
+
 	public NavItem getNavByRef(final String ref) {
-		return this.map.get(ref);
+		final NavItem result = this.map.get(ref);
+		if (result == null) {
+			throw new IllegalArgumentException("Content reference is not presenet in the navigation tree: " + ref);
+		}
+		return result;
+	}
+
+	public boolean isDescendant(final NavItem parent, final String ref) {
+		NavItem cur = getNavByRef(ref);
+
+		//
+		// Root is the descendant of every node in the navigation tree, so it makes only
+		// sense to compare if they are equal.
+		//
+		if (parent.isRoot()) {
+			return cur.getRef().equals(parent.getRef());
+		}
+
+		do {
+			if (cur.getRef().equals(parent.getRef())) {
+				logger.log(Level.INFO, "parent: {0} current: {1}", parent, cur);
+				return true;
+			}
+			if (cur.isRoot()) {
+				return false;
+			}
+			cur = cur.getParent();
+		} while (true);
 	}
 
 	public void traverse(final NavItemVisite visite) {
