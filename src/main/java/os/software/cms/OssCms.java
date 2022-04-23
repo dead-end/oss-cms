@@ -13,7 +13,7 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 
 import os.software.cms.handler.NavigationHandler;
 import os.software.cms.navigation.Navigation;
-import os.software.cms.persistance.Persistance;
+import os.software.cms.persistance.PersistanceManager;
 import os.software.cms.script.Context;
 import os.software.cms.script.RenderEngine;
 
@@ -24,15 +24,15 @@ public class OssCms {
 
 		final Path home = Paths.get(args[0]).toAbsolutePath().normalize();
 
-		final Persistance persistance = new Persistance(home);
+		PersistanceManager.init(home);
 
-		final Navigation navigation = new Navigation(persistance);
+		final Navigation navigation = new Navigation();
 		navigation.readNavTree();
 
-		final RenderEngine renderScriptEngine = new RenderEngine(persistance);
+		final RenderEngine renderScriptEngine = new RenderEngine();
 		renderScriptEngine.loadDefaultTemplates();
 
-		final Context ctx = new Context(persistance, renderScriptEngine, navigation);
+		final Context ctx = new Context(renderScriptEngine, navigation);
 
 		final Path out = Paths.get(args[1]);
 

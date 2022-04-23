@@ -15,19 +15,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import os.software.cms.Constants;
 import os.software.cms.persistance.Persistance;
 import os.software.cms.persistance.PersistanceException;
+import os.software.cms.persistance.PersistanceManager;
 
 public class Navigation {
 	private static final Logger logger = System.getLogger(Navigation.class.getName());
 
 	private final Path navigation;
-	private final Persistance persistance;
 
 	private NavItem root;
 	private Map<String, NavItem> map;
 
-	public Navigation(final Persistance persistance) {
+	public Navigation() {
 		super();
-		this.persistance = persistance;
+
 		this.navigation = Paths.get(Constants.PATH_NAVIGATION);
 	}
 
@@ -69,7 +69,8 @@ public class Navigation {
 	private NavItem readNavTree(final Path path, final NavItem parent, final ObjectMapper objectMapper)
 			throws IOException, PersistanceException {
 
-		final String[] children = this.persistance.getChildren(path, null);
+		final Persistance persist = PersistanceManager.getPersistance();
+		final String[] children = persist.getChildren(path, null);
 		if (children == null || children.length == 0) {
 			return null;
 		}
@@ -99,10 +100,13 @@ public class Navigation {
 
 	private NavItem navItemFromJson(final Path parent, final String[] children, final ObjectMapper objectMapper)
 			throws PersistanceException, IOException {
+
+		final Persistance persist = PersistanceManager.getPersistance();
+
 		for (final String child : children) {
 			if (Constants.FILE_NAV.equals(child)) {
 				final Path path = parent.resolve(child);
-				final String json = this.persistance.readString(path);
+				final String json = persist.readString(path);
 				return objectMapper.readValue(json, NavItem.class);
 			}
 		}
