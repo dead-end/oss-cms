@@ -18,9 +18,9 @@ import os.software.cms.RendererType;
 import os.software.cms.collections.Content;
 import os.software.cms.persistance.PersistanceService;
 
-public class RenderEngine {
+public class Renderer {
 
-	private static final Logger logger = System.getLogger(RenderEngine.class.getName());
+	private static final Logger logger = System.getLogger(Renderer.class.getName());
 
 	private static final NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
 
@@ -28,8 +28,12 @@ public class RenderEngine {
 
 	private final Set<String> loadedScripts = new HashSet<>();
 
-	public RenderEngine() {
+	public Renderer() throws Exception {
 		this.engine = factory.getScriptEngine("--language=es6");
+
+		this.engine.put(Constants.CTX_KEY, new Context(this));
+
+		loadDefaultTemplates();
 	}
 
 	private void loadScript(final Path path) throws Exception {
@@ -43,10 +47,9 @@ public class RenderEngine {
 		}
 	}
 
-	public void loadDefaultTemplates() throws Exception {
+	private void loadDefaultTemplates() throws Exception {
 		final Path dir = Paths.get(Constants.PATH_TEMPLATES);
-		final String[] children = PersistanceService.getService().getChildren(dir,
-				n -> n.endsWith(Constants.EX_JS));
+		final String[] children = PersistanceService.getService().getChildren(dir, n -> n.endsWith(Constants.EX_JS));
 		for (final String child : children) {
 			loadScript(dir.resolve(child));
 		}
@@ -72,9 +75,5 @@ public class RenderEngine {
 		loadScript(content.getRendererPath(renderType, selector));
 
 		return invokeRenderFct(fct, contentId, data);
-	}
-
-	public void setContext(final Context ctx) {
-		this.engine.put(Constants.CTX_KEY, ctx);
 	}
 }

@@ -1,20 +1,14 @@
 package os.software.cms.script;
 
 import os.software.cms.navigation.NavItem;
-import os.software.cms.navigation.Navigation;
+import os.software.cms.navigation.NavigationService;
 
 public class Context {
 
-	private final RenderEngine renderScriptEngine;
+	private final Renderer renderScriptEngine;
 
-	private final Navigation navigation;
-
-	public Context(final RenderEngine renderScriptEngine, final Navigation navigation) {
-
+	public Context(final Renderer renderScriptEngine) {
 		this.renderScriptEngine = renderScriptEngine;
-		this.navigation = navigation;
-
-		renderScriptEngine.setContext(this);
 	}
 
 	public String render(final String contentId, final String renderTypeStr, final String selector) throws Exception {
@@ -22,15 +16,15 @@ public class Context {
 	}
 
 	public NavItem getNavItem(final String path) {
-		return this.navigation.getNavItem(path);
+		return NavigationService.getService().getNavItem(path);
 	}
 
 	public NavItem getNavRoot() {
-		return this.navigation.getNavRoot();
+		return NavigationService.getService().getNavRoot();
 	}
 
 	public NavItem getNavByRef(final String ref) {
-		return this.navigation.getNavByRef(ref);
+		return NavigationService.getService().getNavByRef(ref);
 	}
 
 	public String getDefaultSelector() {
