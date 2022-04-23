@@ -31,6 +31,7 @@ public class OssCms {
 		navigation.readNavTree();
 
 		final Renderer renderer = RendererService.getService();
+		renderer.setContextPath("");
 
 		final Path out = Paths.get(args[1]);
 
