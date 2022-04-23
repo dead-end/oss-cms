@@ -26,14 +26,20 @@ public class Renderer {
 
 	private final ScriptEngine engine;
 
+	private final Context context;
+
 	private final Set<String> loadedScripts = new HashSet<>();
 
 	public Renderer() throws Exception {
 		this.engine = factory.getScriptEngine("--language=es6");
-
-		this.engine.put(Constants.CTX_KEY, new Context(this));
+		this.context = new Context(this);
+		this.engine.put(Constants.CTX_KEY, this.context);
 
 		loadDefaultTemplates();
+	}
+
+	public void setContextPath(final String contextPath) {
+		this.context.setContextPath(contextPath);
 	}
 
 	private void loadScript(final Path path) throws Exception {

@@ -6,6 +6,7 @@ import os.software.cms.navigation.NavigationService;
 public class Context {
 
 	private final Renderer renderScriptEngine;
+	private String contextPath;
 
 	public Context(final Renderer renderScriptEngine) {
 		this.renderScriptEngine = renderScriptEngine;
@@ -30,4 +31,13 @@ public class Context {
 	public String getDefaultSelector() {
 		return null;
 	}
+
+	public String getContextPath() {
+		return this.contextPath;
+	}
+
+	public void setContextPath(final String contextPath) {
+		this.contextPath = contextPath;
+	}
+
 }
