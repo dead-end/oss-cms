@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import os.software.cms.navigation.NavItem;
 import os.software.cms.navigation.Navigation;
+import os.software.cms.renderer.Renderer;
 import os.software.cms.renderer.RendererService;
 
 public class NavigationHandler extends AbstractHandler {
@@ -48,8 +49,9 @@ public class NavigationHandler extends AbstractHandler {
 					response.setContentType(MimeTypes.Type.TEXT_HTML_UTF_8.asString());
 					response.setStatus(HttpServletResponse.SC_OK);
 
-					final String html = RendererService.getService().render(navItem.getRef(), "page", null);
-					logger.log(Level.INFO, html);
+					final Renderer renderer = RendererService.getService();
+					renderer.setContextPath(baseRequest.getContextPath());
+					final String html = renderer.render(navItem.getRef(), "page", null);
 
 					response.getWriter().println(html);
 					baseRequest.setHandled(true);
