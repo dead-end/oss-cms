@@ -18,6 +18,8 @@ public interface Constants {
 
 	String JS_JSON_PARSE = "parse";
 
+	String EXT_HTML = ".html";
+
 	String EXT_JSON = ".json";
 
 	String EX_JS = ".js";
